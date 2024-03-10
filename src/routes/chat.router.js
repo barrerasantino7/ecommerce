@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
-router.get("/messages", (req,res)=>{
-    res.render("mensajes")
+router.get("/chat", (req,res)=>{
+    res.render("chat")
 });
 
 module.exports = router;

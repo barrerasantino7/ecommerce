@@ -1,6 +1,6 @@
-<h2>Productos</h2>
+<h2>Producto por id</h2>
 
-{{#each products}}
+{{product}}
 <div>
     <h3>{{this.title}}</h3>
     <p>{{this.description}}</p>
@@ -10,7 +10,6 @@
     <p>{{this.stock}}</p>
     <p>{{this.category}}</p>
     <p>{{this.thumbnail}}</p>
+    <button>Eliminar</button>
     <button>Sumar al carrito</button>
-    <a href="/products/{{this.id}}">Detalles</a>
 </div>
-{{/each}}

@@ -4,13 +4,16 @@ const PUERTO = 8080;
 const exphbs = require("express-handlebars");
 const mongoose = require("mongoose");
 const multer = require("multer");
+const socket = require("socket.io")
+//Coneccion a la base de datos
+require("./database.js")
 
 
 //Importamos las Rutas
 const inicioRouter = require("./routes/inicio.router.js");
 const productsRouter = require("./routes/products.router.js");
 const cartsRouter = require("./routes/carts.router.js");
-const messagesRouter = require("./routes/messages.router.js");
+const chatRouter = require("./routes/chat.router.js");
 const realTimerRouter = require("./routes/realtimeproducts.router.js")
 
 //Middleware
@@ -43,15 +46,42 @@ app.get("/",(req, res)=>{
 app.use("/", inicioRouter);
 app.use("/", productsRouter);
 app.use("/", cartsRouter);
-app.use("/", messagesRouter);
+app.use("/", chatRouter);
 app.use("/", realTimerRouter);
 
-app.listen(PUERTO,()=>{
+//Levantamos el servidor y lo guardamos en una referenica
+const httpServer = app.listen(PUERTO,()=>{
     console.log(`Escuchando en el http://localhost:${PUERTO}`)
 });
 
 
-//Coneccion a la base de datos
-mongoose.connect("mongodb+srv://barrerasantino7:44064330@cluster0.rbu84ul.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0")
-.then(()=>console.log("Conectado a la Base de Datos"))
-.catch(error =>console.log(error))
+//CHAT
+//Usamos la referencia del servidor para usarlo con Websocket
+const io = new socket.Server(httpServer);
+
+//Importamos chat manager para pode manipular la informacion recibida desde el main.js
+const chatmanager = require("./controllers/chat-manager.js");
+const ChatManager = new chatmanager;
+
+//Evento inicial para conectarnos al cliente (servidor-cliente)
+io.on("connection", (socket)=>{
+    console.log("Coneccion establecida")
+
+    //test
+    socket.on("test", (data)=>{
+        console.log(data)
+    })
+
+    //Recibimos el mensaje que el cliente nos envia
+    socket.on("message", async (data)=>{
+
+        //Con ese mensaje creamos un nuevo "objeto" donde se guarda user y message
+        await ChatManager.newMessage(data);
+
+        //Guardamos la informacion dentro de la base de datos
+        const info = await ChatManager.getMessages();
+
+        //Emitimos el mensaje de respuesta (una actualizacion del historial de chat con el nuevo mensaje) REVISAR POR QUE LLEVA IO
+        io.emit("messagesLog", info )
+    })
+})

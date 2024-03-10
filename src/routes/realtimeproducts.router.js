@@ -20,6 +20,7 @@ router.post("/realtime", async (req,res)=>{
 
     await newProduct.save();
     res.redirect("/realtime")
-})
+});
+
 
 module.exports = router;
