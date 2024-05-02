@@ -49,9 +49,10 @@ class ProductManager {
             if(!productById){
                 console.log("Error al encontrar el producto")
                 return null;
+            }else{
+                console.log("Producto encontrado")
+                return productById;
             }
-            console.log("Producto encontrado")
-            return productById;
         } catch (error) {
             console.log("Error al mostrar el producto", error);
             throw error;
@@ -90,5 +91,22 @@ class ProductManager {
             throw error;
         }
     }
+
+    async getProductByCategory(category){
+        const ProductsByCategory = await ProductModel.find({"category": category})
+        return ProductsByCategory;
+    }
+
+    /*
+    async getProductWithLimit(limit){
+        try {
+            const productsLimits = await ProductModel.find().limit(limit);
+            return productsLimits
+        } catch (error) {
+            console.log("Error al limitar productos")
+            throw error;
+        }
+    }
+    */
 }
 module.exports = ProductManager;

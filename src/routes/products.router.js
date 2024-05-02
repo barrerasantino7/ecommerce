@@ -4,16 +4,38 @@ const router = express.Router();
 //const productModel = require("../models/products.model.js");
 
 const productManager = require("../controllers/product-manager.js");
+const productsModel = require("../models/products.model.js");
 const ProductManager = new productManager();
-
 
 //1)Obtener todos los productos o con algun limite
 router.get("/products", async (req,res)=>{
-    const getProducts = await ProductManager.getProducts();
-    const limite = req.query.limit; // (?limit=4)
+    const limit = parseInt(req.query.limit) || 4;
+    const page = req.query.page || 1 ;
+    //const getProductsLimit = await ProductManager.getProductWithLimit(limit);
 
-    let products = getProducts.map((product)=>{
-        return {
+    const productsPage = await productsModel.paginate({},{limit, page});
+
+    const productsResultadoFinal = productsPage.docs.map( product =>{
+        return {_id, title, description, code, price, status, stock, category, thumbnail} = product.toObject();
+     })
+
+    res.render("productos", {products: productsResultadoFinal,
+        hasPrevPage: productsPage.hasPrevPage,
+        hasNextPage: productsPage.hasNextPage,
+        prevPage: productsPage.prevPage,
+        nextPage: productsPage.nextPage,
+        currentPage: productsPage.page,
+        totalPages: productsPage.totalPages});
+}),
+
+//Obtener por categoria
+router.get("/products/:category", async (req,res)=>{
+    const category = req.params.category;
+
+    const ProductsByCategory = await ProductManager.getProductByCategory(category)
+
+    let products = ProductsByCategory.map((product)=>{
+        return{
             id: product._id,
             title: product.title,
             description: product.description,
@@ -24,19 +46,13 @@ router.get("/products", async (req,res)=>{
             category: product.category,
             thumbnail: product.thumbnail
         }
-    });
-    
-    if(limite){
-        products = products.slice(0, limite); 
-        res.render("productos", {products: products})
-    }else{
-        res.render("productos", {products: products})
-    }
+    })
 
-});
+     res.render("productos", {products: products});
+})
 
 //2)Obtener producto por id
-router.get("/products/:id", async (req,res)=>{
+router.get("/product/:id", async (req,res)=>{
     const id = req.params.id
 
     const getProductById = await ProductManager.getProductById(id);
@@ -68,7 +84,7 @@ router.delete("/products/:id", async (req,res)=>{
     
     await ProductManager.deleteProductById(id);
 
-    res.redirect("/products")
+    res.redirect("/productos")
 
 });
 
@@ -80,6 +96,23 @@ router.put("/products/:id", async (req,res)=>{
 
     await ProductManager.updateProduct(id,updateCamp);
 
-    res.redirect("/products")
+    res.redirect("/productos")
 })
 module.exports = router; 
+
+
+/*
+    let products = getProductsLimit.map((product)=>{
+        return{
+            id: product._id,
+            title: product.title,
+            description: product.description,
+            code: product.code,
+            price: product.price,
+            status: product.status,
+            stock: product.stock,
+            category: product.category,
+            thumbnail: product.thumbnail
+        }
+    })
+    */

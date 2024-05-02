@@ -4,18 +4,27 @@ const PUERTO = 8080;
 const exphbs = require("express-handlebars");
 const mongoose = require("mongoose");
 const multer = require("multer");
-const socket = require("socket.io")
+const socket = require("socket.io");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+const initializePassport = require("./config/passport.config.js");
+const passport = require("passport")
+
 //Coneccion a la base de datos
 require("./database.js")
 
 
 //Importamos las Rutas
-const inicioRouter = require("./routes/inicio.router.js");
+const loginRouter = require("./routes/login.router.js");
 const productsRouter = require("./routes/products.router.js");
 const cartsRouter = require("./routes/carts.router.js");
 const chatRouter = require("./routes/chat.router.js");
-const realTimerRouter = require("./routes/realtimeproducts.router.js")
+const createproductRouter = require("./routes/createproduct.router.js");
+const productoById = require("./routes/product-by-id.router.js");
+const registerRouter = require("./routes/user.router.js");
+const profileRouter = require("./routes/profile.router.js")
 
+////////////////////////////////////////////////////////////////////////
 //Middleware
 app.use(express.static("./src/public"));
 app.use(express.json()); 
@@ -30,7 +39,22 @@ const storage = multer.diskStorage({
     }
 })
 app.use(multer({storage}).single("image"));
+//Middleware de session
+app.use(session({
+    secret: "secretCoder",
+    resave: true,
+    saveUninitialized: true,
+    //MongoStore
+    store:MongoStore.create({
+        mongoUrl:"mongodb+srv://barrerasantino7:44064330@cluster0.rbu84ul.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0"
+    })
+}))
+//Middleware passport
+initializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
 
+////////////////////////////////////////////////////////////////
 
 //Configuración de handlebars: 
 app.engine("handlebars", exphbs.engine());
@@ -43,11 +67,14 @@ app.get("/",(req, res)=>{
 });
 
 //Rutas
-app.use("/", inicioRouter);
+app.use("/", loginRouter);
 app.use("/", productsRouter);
 app.use("/", cartsRouter);
 app.use("/", chatRouter);
-app.use("/", realTimerRouter);
+app.use("/", createproductRouter);
+app.use("/", productoById);
+app.use("/", registerRouter)
+app.use("/", profileRouter)
 
 //Levantamos el servidor y lo guardamos en una referenica
 const httpServer = app.listen(PUERTO,()=>{

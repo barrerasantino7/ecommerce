@@ -1,7 +1,10 @@
-<h2>Productos</h2>
+<h2 class="main-titulo">Productos</h2>
 
+<main class="main">
+
+<section class="main-productos">
 {{#each products}}
-<div>
+<div class="producto">
     <h3>{{this.title}}</h3>
     <p>{{this.description}}</p>
     <p>{{this.code}}</p>
@@ -11,6 +14,23 @@
     <p>{{this.category}}</p>
     <p>{{this.thumbnail}}</p>
     <button>Sumar al carrito</button>
-    <a href="/products/{{this.id}}">Detalles</a>
+    <a href="/product/{{this._id}}">Detalles</a>
 </div>
 {{/each}}
+</section>
+
+
+<div class="anterior_siguiente">
+    {{#if hasPrevPage}}
+<a class="anterior-siguiente" href="/products?page={{prevPage}}">Anterior</a>
+{{/if}}
+
+{{#if hasNextPage}}
+<a class="anterior-siguiente" href="/products?page={{nextPage}}">Siguiente</a>
+{{/if}}
+</div>
+
+
+<p>Pagina {{currentPage}} de {{totalPages}}</p>
+
+</main>

@@ -4,6 +4,10 @@ const router = express.Router();
 const cartmanager = require("../controllers/cart-manager.js");
 const CartManager = new cartmanager
 
+//Obtenemos el carrtio
+router.get("/carts", (req,res)=>{
+    res.render("carrito")
+})
 //1)Creamos un nuevo carrito
 router.post("/carts", async (req,res)=>{
     try {

@@ -2,11 +2,11 @@ const express = require("express");
 const router = express.Router();
 const productsModel = require("../models/products.model.js")
 
-router.get("/realtime", (req,res)=>{
-    res.render("tiemporeal");
+router.get("/createproduct", (req,res)=>{
+    res.render("createproduct");
 });
 
-router.post("/realtime", async (req,res)=>{
+router.post("/createproduct", async (req,res)=>{
 
     const newProduct = new productsModel();
     newProduct.title = req.body.title;
@@ -15,11 +15,11 @@ router.post("/realtime", async (req,res)=>{
     newProduct.price = req.body.price;
     newProduct.status = req.body.status;
     newProduct.stock = req.body.stock;
-    newProduct.category = req.body.categoy;
+    newProduct.category = req.body.category;
     newProduct.thumbnail = req.body.thumbnail;
 
     await newProduct.save();
-    res.redirect("/realtime")
+    res.redirect("/createproduct")
 });
 
 
