@@ -2,33 +2,33 @@ const express = require("express");
 const app = express();
 const PUERTO = 8080;
 const exphbs = require("express-handlebars");
-const mongoose = require("mongoose");
 const multer = require("multer");
 const socket = require("socket.io");
-const session = require("express-session");
-const MongoStore = require("connect-mongo");
-const initializePassport = require("./config/passport.config.js");
+const cookieParser = require("cookie-parser");
+//const session = require("express-session");
+//const MongoStore = require("connect-mongo");
 const passport = require("passport")
+const initializePassport = require("./config/passport.config.js");
 
 //Coneccion a la base de datos
 require("./database.js")
 
 
 //Importamos las Rutas
-const loginRouter = require("./routes/login.router.js");
-const productsRouter = require("./routes/products.router.js");
 const cartsRouter = require("./routes/carts.router.js");
 const chatRouter = require("./routes/chat.router.js");
-const createproductRouter = require("./routes/createproduct.router.js");
-const productoById = require("./routes/product-by-id.router.js");
-const registerRouter = require("./routes/user.router.js");
-const profileRouter = require("./routes/profile.router.js")
+const usersRouter = require("./routes/users.router.js")
+const viwsrouter = require("./routes/views.router.js")
+const productRouter = require("./routes/product.router.js");
 
 ////////////////////////////////////////////////////////////////////////
 //Middleware
 app.use(express.static("./src/public"));
 app.use(express.json()); 
 app.use(express.urlencoded({extended:true}));
+//AuthMiddleware
+const authMiddleware = require("./middleware/authmiddleware.js");
+app.use(authMiddleware);
 //Middleware Multer
 const storage = multer.diskStorage({
     destination: (req,file,cb)=>{
@@ -40,6 +40,7 @@ const storage = multer.diskStorage({
 })
 app.use(multer({storage}).single("image"));
 //Middleware de session
+/*
 app.use(session({
     secret: "secretCoder",
     resave: true,
@@ -49,10 +50,11 @@ app.use(session({
         mongoUrl:"mongodb+srv://barrerasantino7:44064330@cluster0.rbu84ul.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0"
     })
 }))
+*/
 //Middleware passport
-initializePassport();
 app.use(passport.initialize());
-app.use(passport.session());
+initializePassport();
+app.use(cookieParser());
 
 ////////////////////////////////////////////////////////////////
 
@@ -61,20 +63,13 @@ app.engine("handlebars", exphbs.engine());
 app.set("view engine", "handlebars");
 app.set("views", "./src/views");
 
-//Prueba
-app.get("/",(req, res)=>{
-    res.render("index");
-});
 
 //Rutas
-app.use("/", loginRouter);
-app.use("/", productsRouter);
 app.use("/", cartsRouter);
 app.use("/", chatRouter);
-app.use("/", createproductRouter);
-app.use("/", productoById);
-app.use("/", registerRouter)
-app.use("/", profileRouter)
+app.use("/", usersRouter);
+app.use("/", viwsrouter);
+app.use("", productRouter);
 
 //Levantamos el servidor y lo guardamos en una referenica
 const httpServer = app.listen(PUERTO,()=>{

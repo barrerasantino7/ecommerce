@@ -2,9 +2,8 @@
 
 <main class="main">
 
-
-{{products}}
-<div>
+{{#each products}}
+<div class="producto">
     <h3>{{this.title}}</h3>
     <p>{{this.description}}</p>
     <p>{{this.code}}</p>
@@ -13,8 +12,9 @@
     <p>{{this.stock}}</p>
     <p>{{this.category}}</p>
     <p>{{this.thumbnail}}</p>
-    <button>Eliminar</button>
     <button>Sumar al carrito</button>
+ <a href="/delete/{{this.id}}">Eliminar producto</a>
 </div>
+{{/each}}
 
 </main>
