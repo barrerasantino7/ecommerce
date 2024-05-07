@@ -2,7 +2,7 @@ const CartRepository = require("../repositories/cart.repository.js");
 const cartRepository = new CartRepository();
 const ProductorRepository = require("../repositories/product.repository.js");
 const productorRepository = new ProductorRepository;
-const UserModel = require("../models/user.model.js");
+const UserModel = require("../models/session.model.js");
 const TicketModel = require("../models/ticket.model.js");
 
 

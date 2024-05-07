@@ -9,6 +9,8 @@ const cookieParser = require("cookie-parser");
 //const MongoStore = require("connect-mongo");
 const passport = require("passport")
 const initializePassport = require("./config/passport.config.js");
+const configObject = require("./config/config.js");
+const {mongo_url, puerto} = configObject;
 
 //Coneccion a la base de datos
 require("./database.js")
