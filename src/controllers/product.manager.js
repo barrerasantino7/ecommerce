@@ -7,7 +7,7 @@ class ProductManager{
         try {
             const newProduct = await ProductRepository.addProduct({title, description, code, price, status, stock, category, thumbnails})
             
-            res.redirect("/createproduct")
+            res.json(newProduct);
         } catch (error) {
             res.status(500).send("Error al crear un nuevo producto");
         }
@@ -16,9 +16,9 @@ class ProductManager{
         try {
             let { limit = 10, page = 1, sort, query } = req.query;
 
-            const productos = await productRepository.obtenerProductos(limit, page, sort, query);
+            const products = await productRepository.getProduct(limit, page, sort, query);
            
-            res.json(productos);
+            res.json(products);
         } catch (error) { 
             res.status(500).send("Error");
         }
@@ -41,9 +41,9 @@ class ProductManager{
     async deleteProduct(req, res) {
         const id = req.params.pid;
         try {
-            let respuesta = await productRepository.eliminarProducto(id);
+            let deleteById = await productRepository.eliminarProducto(id);
 
-            res.json(respuesta);
+            res.json(deleteById);
         } catch (error) {
             res.status(500).send("Error al eliminar el producto");
         }
@@ -52,10 +52,10 @@ class ProductManager{
     async updateProduct(req, res) {
         try {
             const id = req.params.pid;
-            const productoActualizado = req.body;
+            const productUpdated = req.body;
 
-            const resultado = await productRepository.actualizarProducto(id, productoActualizado);
-            res.json(resultado);
+            const newProduct = await productRepository.actualizarProducto(id, productUpdated);
+            res.json(newProduct);
         } catch (error) {
             res.status(500).send("Error al actualizar el producto");
         }

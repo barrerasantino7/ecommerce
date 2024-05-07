@@ -2,7 +2,7 @@
 
 <main class="main">
 
-{{#each products}}
+{{product}}
 <div class="producto">
     <h3>{{this.title}}</h3>
     <p>{{this.description}}</p>
@@ -15,6 +15,5 @@
     <button>Sumar al carrito</button>
  <a href="/delete/{{this.id}}">Eliminar producto</a>
 </div>
-{{/each}}
 
 </main>
