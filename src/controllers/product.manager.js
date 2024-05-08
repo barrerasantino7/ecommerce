@@ -41,7 +41,7 @@ class ProductManager{
     async deleteProduct(req, res) {
         const id = req.params.pid;
         try {
-            let deleteById = await productRepository.eliminarProducto(id);
+            let deleteById = await ProductRepository.deleteProduct(id)
 
             res.json(deleteById);
         } catch (error) {
@@ -54,7 +54,7 @@ class ProductManager{
             const id = req.params.pid;
             const productUpdated = req.body;
 
-            const newProduct = await productRepository.actualizarProducto(id, productUpdated);
+            const newProduct = await ProductRepository.updateProduct(id, productUpdate)
             res.json(newProduct);
         } catch (error) {
             res.status(500).send("Error al actualizar el producto");

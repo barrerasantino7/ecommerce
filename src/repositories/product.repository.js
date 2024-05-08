@@ -88,10 +88,10 @@ class ProductRepository{
                 return productById
             }
         } catch (error) {
-            throw new Error("Error");
+            console.error("Error al obtener producto por id")
         }
-
     }
+
     async deleteProduct(id){
         try {
             const deleteById = await ProductModel.findByIdAndDelete(id);

@@ -29,6 +29,36 @@ class Viewscontroller{
     async renderCreateProducts(req,res){
         res.render("createproduct")
     }
+
+        
+    async renderProductById(req,res){
+        const pid = req.params.pid
+        try {
+            const productById = await ProductManager.getProductById(pid);
+            if(!productById){
+                res.status(400).json({error: "Producto id no encontrado"})
+            }else{
+                res.render("producto-por-id", productById);
+            }
+            /*
+            if(!productById){
+                res.status(400).json({error: "producto no encontrado"});
+            }else{
+                const {id, ...rest} = productById.toObject();
+
+                const product = { id: id, ...rest }; // Agregar el ID al objeto
+                
+            }
+            */
+        } catch (error) {
+            console.error("Error al obtener producto por id", error);
+            res.status(500).json({
+                status: 'error',
+                error: "Error interno del servidor"
+            });
+        }
+    }
+    
     async renderProducts(req, res) {
         try {
             const { page = 1, limit = 4 } = req.query;
