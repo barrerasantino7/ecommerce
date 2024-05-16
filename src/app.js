@@ -5,12 +5,12 @@ const exphbs = require("express-handlebars");
 const multer = require("multer");
 const socket = require("socket.io");
 const cookieParser = require("cookie-parser");
-//const session = require("express-session");
-//const MongoStore = require("connect-mongo");
 const passport = require("passport")
 const initializePassport = require("./config/passport.config.js");
 const configObject = require("./config/config.js");
 const {mongo_url, puerto} = configObject;
+const compression = require("express-compression");
+const addLogger = require("./middleware/loggermiddleware.js")
 
 //Coneccion a la base de datos
 require("./database.js")
@@ -19,15 +19,18 @@ require("./database.js")
 //Importamos las Rutas
 const cartsRouter = require("./routes/carts.router.js");
 const chatRouter = require("./routes/chat.router.js");
-const usersRouter = require("./routes/users.router.js")
-const viwsrouter = require("./routes/views.router.js")
+const usersRouter = require("./routes/users.router.js");
+const viwsrouter = require("./routes/views.router.js");
 const productRouter = require("./routes/product.router.js");
+const fakerProductsRouter = require("./routes/fakerProducts.router.js");
 
 ////////////////////////////////////////////////////////////////////////
 //Middleware
 app.use(express.static("./src/public"));
 app.use(express.json()); 
 app.use(express.urlencoded({extended:true}));
+app.use(compression());
+app.use(addLogger)
 //AuthMiddleware
 const authMiddleware = require("./middleware/authmiddleware.js");
 app.use(authMiddleware);
@@ -71,13 +74,22 @@ app.use("/", cartsRouter);
 app.use("/", chatRouter);
 app.use("/", usersRouter);
 app.use("/", viwsrouter);
-app.use("", productRouter);
+app.use("/", productRouter);
+app.use("/", fakerProductsRouter);
 
 //Levantamos el servidor y lo guardamos en una referenica
 const httpServer = app.listen(PUERTO,()=>{
     console.log(`Escuchando en el http://localhost:${PUERTO}`)
 });
 
+//LoggerTest
+app.get("/loggerTest", (req,res)=>{
+    req.logger.error("Error importante");
+    req.logger.warning("Peligro!");
+    req.logger.info("Estamos trabajando en el error, aguarde");
+
+    res.send("Logs generados")
+})
 
 //CHAT
 //Usamos la referencia del servidor para usarlo con Websocket

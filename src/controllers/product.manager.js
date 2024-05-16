@@ -54,7 +54,7 @@ class ProductManager{
             const id = req.params.pid;
             const productUpdated = req.body;
 
-            const newProduct = await ProductRepository.updateProduct(id, productUpdate)
+            const newProduct = await ProductRepository.updateProduct(id, productUpdated)
             res.json(newProduct);
         } catch (error) {
             res.status(500).send("Error al actualizar el producto");
